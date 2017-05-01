@@ -19,6 +19,6 @@ gulp.task('test', function() {
     });
 });
 
-gulp.task('watch', function() {
-  gulp.watch(['./course.js', './student.js'], ['test']);
+gulp.task('watch', ['test'], function() {
+  gulp.watch(['./*.js'], ['test']);
 });
