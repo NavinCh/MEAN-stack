@@ -1,0 +1,10 @@
+
+<div class="search-bar-wrapper">
+  <div>
+    <input ng-model="searchText" class="search-bar-input" ng-change="update()" />
+
+  </div>
+    <div class="autocomplete-result" ng-repeat="result in results">
+      {{result.name}}
+    </div>
+</div>

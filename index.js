@@ -1,14 +1,36 @@
-var express = require('express');
-var wagner = require('wagner-core');
+var controllers = require('./controllers');
+var directives = require('./directives');
+var services = require('./services');
+var _ = require('underscore');
 
-require('./models')(wagner);
-require('./dependencies')(wagner);
+var components = angular.module('mean-retail.components', ['ng']);
 
-var app = express();
+_.each(controllers, function(controller, name) {
+  components.controller(name, controller);
+});
 
-wagner.invoke(require('./auth'), { app: app });
+_.each(directives, function(directive, name) {
+  components.directive(name, directive);
+});
 
-app.use('/api/v1', require('./api')(wagner));
+_.each(services, function(factory, name) {
+  components.factory(name, factory);
+});
 
-app.listen(3000);
-console.log('Listening on port 3000!');
+var app = angular.module('mean-retail', ['mean-retail.components', 'ngRoute']);
+
+app.config(function($routeProvider) {
+  $routeProvider.
+    when('/category/:category', {
+      templateUrl: '/assessment/templates/category_view.html'
+    }).
+    when('/checkout', {
+      template: '<checkout></checkout>'
+    }).
+    when('/product/:id', {
+      template: '<product-details></product-details>'
+    }).
+    when('/', {
+      template: '<search-bar></search-bar>'
+    });
+});
