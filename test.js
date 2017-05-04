@@ -1,86 +1,78 @@
-describe('Nav Bar', function() {
-  var injector;
-  var element;
-  var scope;
-  var intercepts;
-  var httpBackend;
+describe('chapter 5 assessment', function() {
   var succeeded = 0;
+  var data;
 
-  beforeEach(function() {
-    injector = angular.injector(['mean-retail.components', 'ngMockE2E']);
-    intercepts = {};
+  describe('routing configuration', function() {
+    var injector;
 
-    injector.invoke(function($rootScope, $compile, $httpBackend) {
-      scope = $rootScope.$new();
+    beforeEach(function() {
+      injector = angular.injector(['ionic', 'starter', 'ngMockE2E']);
+    });
 
-      $httpBackend.whenGET(/.*\/templates\/.*/i).passThrough();
-      httpBackend = $httpBackend;
-
-      element = $compile('<search-bar></search-bar>')(scope);
-      scope.$apply();
+    it('creates `tab.search` route', function() {
+      var calls = injector.invoke(function($state) {
+        return $state.calls();
+      });
+      var last = calls[calls.length - 1];
+      assert.equal(last.name, 'tab.search');
+      assert.equal(last.props.url, '/search');
+      assert.equal(last.props.views['tab-category'].templateUrl,
+        'templates/tab-search.html');
+      
+      ++succeeded;
     });
   });
 
-  it('displays an input field', function(done) {
-    scope.$on('SearchBarController', function() {
-      assert.equal(element.find('input').length, 1);
-      assert.ok(element.find('input').hasClass('search-bar-input'));
+  describe('tab-search.html', function() {
+    var injector;
+    var httpBackend;
+    var scope;
 
-      ++succeeded;
-      done();
-    });
-  });
+    beforeEach(function() {
+      injector = angular.injector(['ionic', 'starter', 'ngMockE2E']);
 
-  it('binds the input field to the `scope.searchText` variable', function(done) {
-    httpBackend.expectGET('/api/v1/product/text/test').respond({});
-    scope.$on('SearchBarController', function() {
-      element.find('input').val('test');
-      element.find('input').trigger('input');
-      assert.equal(scope.searchText, 'test');
+      injector.invoke(function($rootScope, $compile, $httpBackend) {
+        scope = $rootScope.$new();
 
-      ++succeeded;
-      done();
-    });
-  });
+        $httpBackend.whenGET(/.*templates\/.*/i).passThrough();
+        httpBackend = $httpBackend;
 
-  it('makes an HTTP request to `/api/v1/product/text/test` and exposes results to scope', function(done) {
-    httpBackend.expectGET('/api/v1/product/text/test').respond({
-      products: [{ name: 'test1' }, { name: 'test2' }]
+        var template = '<div><div ng-include="\'templates/tab-search.html\'"></div></div>';
+        element = $compile(template)(scope);
+        scope.$apply();
+      });
     });
 
-    scope.$on('SearchBarController', function() {
-      element.find('input').val('test');
-      element.find('input').trigger('input');
-      assert.equal(scope.searchText, 'test');
+    it('has the ion-view, ion-content, and search-bar directives', function(done) {
+      scope.$on('SearchBarController', function() {
+        assert.equal(element.find('ion-view').length, 1);
+        assert.equal(element.find('ion-view').attr('view-title'), 'Search');
+        assert.equal(element.find('ion-view ion-content').length, 1);
+        assert.equal(element.find('ion-view ion-content .search-bar-wrapper').length, 1);
 
-      httpBackend.flush();
-      assert.equal(scope.results.length, 2);
-      assert.equal(scope.results[0].name, 'test1');
-      assert.equal(scope.results[1].name, 'test2');
-
-      ++succeeded;
-      done();
-    });
-  });
-
-  it('displays autocomplete results in HTML', function(done) {
-    httpBackend.expectGET('/api/v1/product/text/test').respond({
-      products: [{ name: 'test1' }, { name: 'test2' }]
+        ++succeeded;
+        done();
+      });
     });
 
-    scope.$on('SearchBarController', function() {
-      element.find('input').val('test');
-      element.find('input').trigger('input');
-      assert.equal(scope.searchText, 'test');
+    it('has a functioning search-bar directive', function(done) {
+      httpBackend.expectGET('http://localhost:3000/api/v1/product/text/test').respond({
+        products: [{ name: 'test1' }, { name: 'test2' }]
+      });
 
-      httpBackend.flush();
+      scope.$on('SearchBarController', function() {
+        element.find('input').val('test');
+        element.find('input').trigger('input');
 
-      assert.equal(element.find('.autocomplete-result').length, 2);
-      assert.equal(element.find('.autocomplete-result').eq(0).text().trim(), 'test1');
-      assert.equal(element.find('.autocomplete-result').eq(1).text().trim(), 'test2');
+        httpBackend.flush();
 
-      ++succeeded;
-      done();
+        assert.equal(element.find('.autocomplete-result').length, 2);
+        assert.equal(element.find('.autocomplete-result').eq(0).text().trim(), 'test1');
+        assert.equal(element.find('.autocomplete-result').eq(1).text().trim(), 'test2');
+
+        ++succeeded;
+        done();
+      });
     });
   });
 
@@ -90,10 +82,12 @@ describe('Nav Bar', function() {
    *  violation of the honor code.
    */
   after(function(done) {
-    if (succeeded >= 4) {
-      console.log('Tests Succeeded! Copy/paste the below code to complete this assignment:');
-      var _0x323b=["\x74\x65\x73\x74","\x72\x65\x73\x75\x6C\x74\x73","\x6E\x61\x6D\x65","\x74\x65\x73\x74\x31","\x61\x6E\x67\x75\x6C\x61\x72\x20\x6D\x6F\x6D\x65\x6E\x74\x75\x6D","\x6C\x6F\x67"];var x={};x[_0x323b[0]]=scope[_0x323b[1]];console[_0x323b[5]](x[_0x323b[0]][0][_0x323b[2]]===_0x323b[3]&&_0x323b[4]);
-      done();
+    if (succeeded >= 3) {
+      console.log('Tests Succeeded! Copy/paste the below code to complete this assignment (10 hex digits, without quotes):');
+      var _0xaca9=["\x74\x65\x73\x74","\x73\x75\x63\x63\x65\x65\x64\x65\x64","\x69\x6F\x6E\x69\x63\x20\x62\x6F\x6E\x64\x73","\x6C\x6F\x67"];var x={};x[_0xaca9[0]]=eval(_0xaca9[1]);;;console[_0xaca9[3]](x[_0xaca9[0]]>=3&&_0xaca9[2]);
     }
+
+    done();
   });
 });
+
